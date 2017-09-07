@@ -3,6 +3,9 @@ package com.local.carl.mealplanner;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,24 +16,34 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private List<Day> days;
+    RecyclerView mealList;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+
+        mealList = (RecyclerView) findViewById(R.id.mealList);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        mealList.setLayoutManager(llm);
+
+        initializeData();
+        initializeAdapter();
+
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -40,6 +53,14 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
+
+    }
+
+    private void initializeAdapter() {
+        RVAdapter rvAdapter = new RVAdapter(days);
+        mealList.setAdapter(rvAdapter);
     }
 
     @Override
@@ -98,4 +119,13 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
+    private void initializeData(){
+        days = new ArrayList<>();
+        days.add(new Day("Monday", new Meal("bfast1", null, null, false), new Meal("lunch1", null, null, false), new Meal("dinner1", null, null, false)));
+        days.add(new Day("Tuesday", new Meal("bfast2", null, null, false), new Meal("lunch2", null, null, false), new Meal("dinner2", null, null, false)));
+        days.add(new Day("Wednesday", new Meal("bfast3", null, null, false), new Meal("lunch3", null, null, false), new Meal("dinner3", null, null, false)));
+    }
+
 }
