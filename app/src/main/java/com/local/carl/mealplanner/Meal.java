@@ -1,10 +1,13 @@
 package com.local.carl.mealplanner;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by carlr on 9/7/2017.
  */
 
-public class Meal {
+public class Meal implements Parcelable{
     String name;
     String url;
     double rating;
@@ -18,8 +21,36 @@ public class Meal {
         this.isFavorite = isFavorite;
     }
 
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public Meal createFromParcel(Parcel in) {
+            return new Meal(in);
+        }
+
+        public Meal[] newArray(int size) {
+            return new Meal[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+    // Parcelling part
+    public Meal(Parcel in){
+        this.name = in.readString();
+        this.url = in.readString();
+        this.notes =  in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.name);
+        dest.writeString(this.url);
+        dest.writeString(this.notes);
+    }
+
     public String getName() {
-        return name;
+        return name!=null ? name:"";
     }
 
     public void setName(String name) {
@@ -27,7 +58,7 @@ public class Meal {
     }
 
     public String getUrl() {
-        return url;
+        return url!=null ? url: "";
     }
 
     public void setUrl(String url) {
@@ -43,7 +74,7 @@ public class Meal {
     }
 
     public String getNotes() {
-        return notes;
+        return notes!=null ? notes:"";
     }
 
     public void setNotes(String notes) {

@@ -5,4 +5,9 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="edit">EDIT</string>
     <string name="action_settings">Settings</string>
+    <string name="edit_meal_title">EDIT MEAL</string>
+    <string name="edit_meal_name">Meal: </string>
+    <string name="edit_meal_url">Recipe Link: </string>
+    <string name="edit_meal_notes">Meal Notes: </string>
+    <string name="button_submit">SUBMIT</string>
 </resources>

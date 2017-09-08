@@ -1,6 +1,7 @@
 package com.local.carl.mealplanner;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -61,10 +62,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.MealViewHolder> im
         this.days = days;
     }
 
-    private void startEditMeal(View v, Meal meal) {
-        Toast.makeText(v.getContext(), "Clicked: " +meal.name, Toast.LENGTH_SHORT).show();
 
-    }
 
     @Override
     public int getItemCount(){
@@ -92,19 +90,19 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.MealViewHolder> im
         mealViewHolder.breakfastButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startEditMeal(v, days.get(i).breakfast);
+                MainActivity.startEditMeal(v, days.get(i).breakfast);
             }
         });
         mealViewHolder.lunchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startEditMeal(v, days.get(i).lunch);
+                MainActivity.startEditMeal(v, days.get(i).lunch);
             }
         });
         mealViewHolder.dinnerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startEditMeal(v, days.get(i).dinner);
+                MainActivity.startEditMeal(v, days.get(i).dinner);
             }
         });
 
@@ -113,8 +111,6 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.MealViewHolder> im
         } else {
             mealViewHolder.dayExpandArea.setVisibility(View.GONE);
         }
-
-         // TODO: 9/7/2017  FINISH SETTING THESE VARS AND BUTTONS
     }
 
     @Override

@@ -16,4 +16,6 @@ class Day {
         this.lunch = lunch;
         this.dinner = dinner;
     }
+
+
 }
