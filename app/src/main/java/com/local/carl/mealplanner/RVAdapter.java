@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +30,9 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.MealViewHolder> im
         TextView breakfastName;
         TextView lunchName;
         TextView dinnerName;
+        Button breakfastButton;
+        Button lunchButton;
+        Button dinnerButton;
         RelativeLayout dayExpandArea;
 
         public MealViewHolder(View itemView){
@@ -38,9 +42,13 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.MealViewHolder> im
             breakfastName = (TextView) itemView.findViewById(R.id.breakfast_name);
             lunchName = (TextView) itemView.findViewById(R.id.lunch_name);
             dinnerName = (TextView) itemView.findViewById(R.id.dinner_name);
-
+            breakfastButton = (Button) itemView.findViewById(R.id.breakfast_button);
+            lunchButton = (Button) itemView.findViewById(R.id.lunch_button);
+            dinnerButton = (Button) itemView.findViewById(R.id.dinner_button);
             dayExpandArea = (RelativeLayout) itemView.findViewById(R.id.dayExpandArea);
         }
+
+
 
     }
 
@@ -51,6 +59,11 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.MealViewHolder> im
     RVAdapter(Context context, List<Day> days){
         this.mContext = context;
         this.days = days;
+    }
+
+    private void startEditMeal(View v, Meal meal) {
+        Toast.makeText(v.getContext(), "Clicked: " +meal.name, Toast.LENGTH_SHORT).show();
+
     }
 
     @Override
@@ -69,14 +82,31 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.MealViewHolder> im
     }
 
     @Override
-    public void onBindViewHolder(MealViewHolder mealViewHolder, int i){
+    public void onBindViewHolder(MealViewHolder mealViewHolder, final int i){
         final boolean isExpanded = i==mExpandedPosition;
 
         mealViewHolder.dayName.setText(days.get(i).name);
         mealViewHolder.breakfastName.setText(days.get(i).breakfast.getName());
         mealViewHolder.lunchName.setText(days.get(i).lunch.getName());
         mealViewHolder.dinnerName.setText(days.get(i).dinner.getName());
-
+        mealViewHolder.breakfastButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startEditMeal(v, days.get(i).breakfast);
+            }
+        });
+        mealViewHolder.lunchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startEditMeal(v, days.get(i).lunch);
+            }
+        });
+        mealViewHolder.dinnerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startEditMeal(v, days.get(i).dinner);
+            }
+        });
 
         if (i == mExpandedPosition){
             mealViewHolder.dayExpandArea.setVisibility(View.VISIBLE);
@@ -106,4 +136,6 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.MealViewHolder> im
         notifyItemChanged(mExpandedPosition);
         Toast.makeText(view.getContext(), "Clicked: " +theDay.name, Toast.LENGTH_SHORT).show();
     }
+
+
 }

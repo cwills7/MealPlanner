@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,12 +27,16 @@ public class MainActivity extends AppCompatActivity
     private List<Day> days;
     RecyclerView mealList;
     private static Context mContext;
+    Button breakfastButton;
+    Button lunchButton;
+    Button dinnerButton;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
+
+        //Setting content and setting up CardView
         mContext = getApplicationContext();
         setContentView(R.layout.activity_main);
 
@@ -45,6 +50,11 @@ public class MainActivity extends AppCompatActivity
 
         initializeData();
         initializeAdapter();
+
+        //Initializing Buttons
+        breakfastButton = (Button) findViewById(R.id.breakfast_button);
+        lunchButton = (Button) findViewById(R.id.lunch_button);
+        dinnerButton = (Button) findViewById(R.id.dinner_button);
 
 
 
@@ -134,5 +144,7 @@ public class MainActivity extends AppCompatActivity
         days.add(new Day("Tuesday", new Meal("bfast2", null, null, false), new Meal("lunchlunchlunch2", null, null, false), new Meal("dinner2", null, null, false)));
         days.add(new Day("Wednesday", new Meal("bfast3", null, null, false), new Meal("lunch3", null, null, false), new Meal("dinner3dindin", null, null, false)));
     }
+
+
 
 }
