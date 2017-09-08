@@ -25,6 +25,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.MealViewHolder> im
 
 
 
+
     public static class MealViewHolder extends RecyclerView.ViewHolder{
         CardView cv;
         TextView dayName;

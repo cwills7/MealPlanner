@@ -8,17 +8,44 @@ import android.os.Parcelable;
  */
 
 public class Meal implements Parcelable{
+    int date;
+    int mealVal;
     String name;
     String url;
     double rating;
     String notes;
     boolean isFavorite;
 
-    Meal(String name, String url, String notes, boolean isFavorite){
+    public enum MealVal{
+        BREAKFAST(1),
+        LUNCH(2),
+        DINNER(3);
+
+        private int val;
+        MealVal(int val){
+            this.val = val;
+        }
+        public int getVal(){
+            return val;
+        }
+    }
+
+    public Meal(String name, String url, String notes, boolean isFavorite, int date, int mealVal){
         this.name = name;
         this.url = url;
         this.notes = notes;
         this.isFavorite = isFavorite;
+        this.date = date;
+        this.mealVal = mealVal;
+    }
+
+    public Meal(int date, int mealVal){
+        this.name = "";
+        this.url = "";
+        this.notes = "";
+        this.isFavorite = false;
+        this.date = date;
+        this.mealVal = mealVal;
     }
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
@@ -37,6 +64,8 @@ public class Meal implements Parcelable{
     }
     // Parcelling part
     public Meal(Parcel in){
+        this.date = in.readInt();
+        this.mealVal = in.readInt();
         this.name = in.readString();
         this.url = in.readString();
         this.notes =  in.readString();
@@ -44,6 +73,8 @@ public class Meal implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.date);
+        dest.writeInt(this.mealVal);
         dest.writeString(this.name);
         dest.writeString(this.url);
         dest.writeString(this.notes);

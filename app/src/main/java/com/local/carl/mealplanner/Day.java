@@ -4,7 +4,7 @@ package com.local.carl.mealplanner;
  * Created by carlr on 9/7/2017.
  */
 
-class Day {
+public class Day {
     String name;
     Meal breakfast;
     Meal lunch;

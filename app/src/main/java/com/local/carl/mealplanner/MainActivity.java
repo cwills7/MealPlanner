@@ -17,19 +17,26 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.local.carl.mealplanner.database.MenuDb;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    public SimpleDateFormat dt = new SimpleDateFormat("yyyyyMMdd");
 
+    private MenuDb menuDb;
     private List<Day> days;
-    RecyclerView mealList;
+    static RecyclerView mealList;
     private static Context mContext;
     Button breakfastButton;
     Button lunchButton;
     Button dinnerButton;
-
+    static RVAdapter rvAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +48,7 @@ public class MainActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        menuDb = new MenuDb(this);
 
         mealList = (RecyclerView) findViewById(R.id.mealList);
         LinearLayoutManager llm = new LinearLayoutManager(this);
@@ -71,7 +78,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initializeAdapter() {
-        RVAdapter rvAdapter = new RVAdapter(this.getApplicationContext(), days);
+        rvAdapter = new RVAdapter(this.getApplicationContext(), days);
         mealList.setAdapter(rvAdapter);
     }
 
@@ -117,6 +124,7 @@ public class MainActivity extends AppCompatActivity
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra("meal", meal);
         mContext.startActivity(intent);
+        rvAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -162,10 +170,22 @@ public class MainActivity extends AppCompatActivity
 
 
     private void initializeData(){
+        Date today = new Date();
+        String todayString = dt.format(today);
+        int noOfDays = 7; //i.e two weeks
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(today);
+        calendar.add(Calendar.DAY_OF_YEAR, noOfDays);
+        Date future = calendar.getTime();
+        String futureString = dt.format(future);
+        int todayInt = Integer.parseInt(todayString);
+        int futureInt = Integer.parseInt(futureString);
+        //TODO menuDb.getOneWeek(todayInt, futureInt);
+
         days = new ArrayList<>();
-        days.add(new Day("Monday", new Meal("breakfast1", null, null, false), new Meal("lunch1", null, null, false), new Meal("dinner1", null, null, false)));
-        days.add(new Day("Tuesday", new Meal("bfast2", null, null, false), new Meal("lunchlunchlunch2", null, null, false), new Meal("dinner2", null, null, false)));
-        days.add(new Day("Wednesday", new Meal("bfast3", null, null, false), new Meal("lunch3", null, null, false), new Meal("dinner3dindin", null, null, false)));
+        days.add(new Day("Monday", new Meal("BreakFast1", "url", "notes", false, 20170908, Meal.MealVal.BREAKFAST.getVal()), new Meal("LUNCH!", "url", "notes", false, 20170908, Meal.MealVal.LUNCH.getVal()), new Meal("DIN1", "url", "notes", false, 20170908, Meal.MealVal.DINNER.getVal())));
+        days.add(new Day("Tuesday", new Meal("BreakFast2", "url", "notes", false, 20170909, Meal.MealVal.BREAKFAST.getVal()), new Meal("LUNCH2", "url", "notes", false, 20170909, Meal.MealVal.LUNCH.getVal()), new Meal("DINNER2", "url", "notes", false, 20170909, Meal.MealVal.DINNER.getVal())));
+        days.add(new Day("Wednesday", new Meal("BreakFast3", "url", "notes", false, 20170910, Meal.MealVal.BREAKFAST.getVal()), new Meal("LUNCH2", "url", "notes", false, 20170910, Meal.MealVal.LUNCH.getVal()), new Meal("DINDIN3", "url", "notes", false, 20170910, Meal.MealVal.DINNER.getVal())));
     }
 
 
