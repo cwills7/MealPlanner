@@ -1,5 +1,6 @@
 package com.local.carl.mealplanner;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.CardView;
@@ -16,6 +17,9 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.local.carl.mealplanner.MainActivity.getContext;
+import static com.local.carl.mealplanner.MainActivity.rvAdapter;
 
 /**
  * Created by carlr on 9/7/2017.
@@ -88,24 +92,9 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.MealViewHolder> im
         mealViewHolder.breakfastName.setText(days.get(i).breakfast.getName());
         mealViewHolder.lunchName.setText(days.get(i).lunch.getName());
         mealViewHolder.dinnerName.setText(days.get(i).dinner.getName());
-        mealViewHolder.breakfastButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MainActivity.startEditMeal(v, days.get(i).breakfast);
-            }
-        });
-        mealViewHolder.lunchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MainActivity.startEditMeal(v, days.get(i).lunch);
-            }
-        });
-        mealViewHolder.dinnerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MainActivity.startEditMeal(v, days.get(i).dinner);
-            }
-        });
+        mealViewHolder.breakfastButton.setOnClickListener(MainActivity.onEditButtonClick(days.get(i).breakfast));
+        mealViewHolder.lunchButton.setOnClickListener(MainActivity.onEditButtonClick(days.get(i).lunch));
+        mealViewHolder.dinnerButton.setOnClickListener(MainActivity.onEditButtonClick(days.get(i).dinner));
 
         if (i == mExpandedPosition){
             mealViewHolder.dayExpandArea.setVisibility(View.VISIBLE);
@@ -113,6 +102,8 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.MealViewHolder> im
             mealViewHolder.dayExpandArea.setVisibility(View.GONE);
         }
     }
+
+
 
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView){
