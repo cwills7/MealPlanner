@@ -70,6 +70,23 @@ public class MenuDb extends SQLiteOpenHelper{
         return true;
     }
 
+    public int updateMeal(Meal meal){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("date", meal.getDate());
+        values.put("meal", meal.getMealVal());
+        values.put("name", meal.getName());
+        values.put("url", meal.getUrl());
+        values.put("notes", meal.getNotes());
+        values.put("favorite", 0);
+
+        String selection = MENU_COLUMN_DATE + " =? and " + MENU_COLUMN_MEAL + " =?";
+        String[] selectionArgs= {Integer.toString(meal.getDate()), Integer.toString(meal.getMealVal())};
+
+        int count = db.update(MenuDb.MENU_TABLE_NAME, values, selection, selectionArgs);
+        return count;
+    }
+
     public Cursor getDay(int date){
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = db.rawQuery("select * from menu where date=" + date+"", null);

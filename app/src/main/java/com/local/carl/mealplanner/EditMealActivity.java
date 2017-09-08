@@ -84,11 +84,9 @@ public class EditMealActivity extends Activity implements View.OnClickListener{
         meal.setNotes(notes);
 
         Intent resultIntent = new Intent();
-        resultIntent.putExtra("meal", meal);
+        resultIntent.putExtra("newMeal", meal);
         setResult(Activity.RESULT_OK, resultIntent);
         finish();
 
-
-        finish();
     }
 }

@@ -1,5 +1,6 @@
 package com.local.carl.mealplanner;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -122,28 +123,49 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    public static void startEditMeal(View v, Meal meal) {
-        Toast.makeText(v.getContext(), "Clicked: " +meal.name, Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(getContext(), EditMealActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra("meal", meal);
-        mContext.startActivity(intent);
-        rvAdapter.notifyDataSetChanged();
-    }
+//    public void startEditMeal(View v, int resultCode, Meal meal) {
+//        Intent intent = new Intent(getContext(), EditMealActivity.class);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        intent.putExtra("meal", meal);
+//        this.startActivityForResult(intent, resultCode);
+//    }
 
+    public static View.OnClickListener onEditButtonClick(final Meal meal){
+
+
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), EditMealActivity.class);
+                intent.putExtra("meal", meal);
+                ((Activity) v.getContext()).startActivityForResult(intent, 2);
+            }
+        };
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
-        if (requestCode == 1) {
-            // Make sure the request was successful
-            if (resultCode == RESULT_OK) {
+        if (requestCode == 2) {
 
+            if(resultCode== RESULT_OK){
+                Meal returnMeal = (Meal) data.getParcelableExtra("newMeal");
+                menuDb.updateMeal(returnMeal);
+                for(int i=0; i < days.size(); i++){
+                    String formatName = null;
+                    try {
+                        formatName = df5.format(dt.parse(Integer.toString(returnMeal.getDate())));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    if (days.get(i).getName().equals(formatName)){
+                        Day newDay = days.get(i).replaceMeal(returnMeal, returnMeal.getMealVal());
+                        break;
+                    }
+                }
 
-                // The user picked a contact.
-                // The Intent's data Uri identifies which contact was selected.
-
-                // Do something with the contact here (bigger example below)
+                rvAdapter.notifyDataSetChanged();
             }
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -179,12 +201,16 @@ public class MainActivity extends AppCompatActivity
         int noOfDays = 7; //i.e two weeks
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(today);
-        calendar.add(Calendar.DAY_OF_YEAR, noOfDays);
+        calendar.add(Calendar.DAY_OF_YEAR, -1);
+        Date queryDate = calendar.getTime();
+        String queryDateString = dt.format(queryDate);
+        calendar.add(Calendar.DAY_OF_YEAR, noOfDays +1);
         Date future = calendar.getTime();
         String futureString = dt.format(future);
         int todayInt = Integer.parseInt(todayString);
+        int queryDateInt = Integer.parseInt(queryDateString);
         int futureInt = Integer.parseInt(futureString);
-        Cursor cur = menuDb.getOneWeek(todayInt, futureInt);
+        Cursor cur = menuDb.getOneWeek(queryDateInt, futureInt);
         days = new ArrayList<>();
 
         try {

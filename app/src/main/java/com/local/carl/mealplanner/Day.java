@@ -17,6 +17,18 @@ public class Day {
         this.dinner = dinner;
     }
 
+    public Day replaceMeal(Meal meal, int mealVal){
+        switch(mealVal){
+            case 1 : this.setBreakfast(meal);
+                break;
+            case 2 : this.setLunch(meal);
+                break;
+            case 3 : this.setDinner(meal);
+                break;
+        }
+        return this;
+    }
+
 
     public String getName() {
         return name;
@@ -50,5 +62,13 @@ public class Day {
         this.dinner = dinner;
     }
 
+
+    @Override
+    public boolean equals(Object o){
+        Day d = (Day) o;
+        if (d.name.equals(((Day) o).getName()))
+        return true;
+        return false;
+    }
 
 }

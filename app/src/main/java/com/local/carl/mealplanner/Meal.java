@@ -135,4 +135,12 @@ public class Meal implements Parcelable{
     public void setMealVal(int mealVal) {
         this.mealVal = mealVal;
     }
+
+    @Override
+    public boolean equals(Object o){
+        Meal m = (Meal) o;
+        if (date!=m.getDate() || mealVal!=m.getMealVal()) return false;
+
+        return true;
+    }
 }
