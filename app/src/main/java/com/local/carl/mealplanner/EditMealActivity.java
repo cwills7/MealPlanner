@@ -73,6 +73,7 @@ public class EditMealActivity extends Activity implements View.OnClickListener{
         if(name.isEmpty()){
             mealNamePrompt.setTextColor(getResources().getColor(R.color.requiredError));
             Toast.makeText(v.getContext(), "MEAL NAME REQUIRED!", Toast.LENGTH_SHORT).show();
+            return;
         }else{
             url = mealUrl.getText().toString();
             notes = mealNotes.getText().toString();

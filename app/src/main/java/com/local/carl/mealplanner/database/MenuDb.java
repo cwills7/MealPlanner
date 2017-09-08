@@ -41,7 +41,7 @@ public class MenuDb extends SQLiteOpenHelper{
     public void onCreate(SQLiteDatabase db){
         db.execSQL(
                 "create table menu " +
-                "(id integer primary key, name text, date integer, meal integer, name text, url text, notes text, favorite int)"
+                "(id integer primary key, date integer, meal integer, name text, url text, notes text, favorite int)"
         );
     }
 
@@ -50,18 +50,10 @@ public class MenuDb extends SQLiteOpenHelper{
         // TODO Define onUpgrade
     }
 
-    public ArrayList<Day> getOneWeek(int today, int future){
-        ArrayList<Day> dayList = new ArrayList<Day>();
-
+    public Cursor getOneWeek(int today, int future){
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = db.rawQuery("select * from menu where date >= " + today +" and date <= " + future +" order by date, meal", null);
-        res.moveToFirst();
-        while(res.isAfterLast()==false){
-        //TODO Parse out Meals, and combine into Days. Adding empties where necessary
-        }
-
-
-        return dayList;
+        return res;
     }
 
 
@@ -90,16 +82,20 @@ public class MenuDb extends SQLiteOpenHelper{
         res.moveToFirst();
         int dae = res.getInt(res.getColumnIndex(MENU_COLUMN_DATE));
 
+        return convertCurToMeal(res);
+    }
+
+    private boolean convertIntToBool(int in){
+        return in==0;
+    }
+
+    public Meal convertCurToMeal(Cursor res){
         return new Meal(res.getString(res.getColumnIndex(MENU_COLUMN_NAME)),
                 res.getString(res.getColumnIndex(MENU_COLUMN_URL)),
                 res.getString(res.getColumnIndex(MENU_COLUMN_NOTES)),
                 convertIntToBool(res.getInt(res.getColumnIndex(MENU_COLUMN_FAVORITE))),
                 res.getInt(res.getColumnIndex(MENU_COLUMN_DATE)),
                 res.getInt(res.getColumnIndex(MENU_COLUMN_MEAL)));
-    }
-
-    private boolean convertIntToBool(int in){
-        return in==0;
     }
 
 }

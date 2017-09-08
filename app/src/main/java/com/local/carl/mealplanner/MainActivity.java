@@ -2,6 +2,7 @@ package com.local.carl.mealplanner;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,6 +20,8 @@ import android.widget.Toast;
 
 import com.local.carl.mealplanner.database.MenuDb;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,7 +30,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    public SimpleDateFormat dt = new SimpleDateFormat("yyyyyMMdd");
+    public SimpleDateFormat dt = new SimpleDateFormat("yyyyMMdd");
+    public DateFormat df5 = new SimpleDateFormat("E, MMM dd");
 
     private MenuDb menuDb;
     private List<Day> days;
@@ -180,12 +184,61 @@ public class MainActivity extends AppCompatActivity
         String futureString = dt.format(future);
         int todayInt = Integer.parseInt(todayString);
         int futureInt = Integer.parseInt(futureString);
-        //TODO menuDb.getOneWeek(todayInt, futureInt);
-
+        Cursor cur = menuDb.getOneWeek(todayInt, futureInt);
         days = new ArrayList<>();
-        days.add(new Day("Monday", new Meal("BreakFast1", "url", "notes", false, 20170908, Meal.MealVal.BREAKFAST.getVal()), new Meal("LUNCH!", "url", "notes", false, 20170908, Meal.MealVal.LUNCH.getVal()), new Meal("DIN1", "url", "notes", false, 20170908, Meal.MealVal.DINNER.getVal())));
-        days.add(new Day("Tuesday", new Meal("BreakFast2", "url", "notes", false, 20170909, Meal.MealVal.BREAKFAST.getVal()), new Meal("LUNCH2", "url", "notes", false, 20170909, Meal.MealVal.LUNCH.getVal()), new Meal("DINNER2", "url", "notes", false, 20170909, Meal.MealVal.DINNER.getVal())));
-        days.add(new Day("Wednesday", new Meal("BreakFast3", "url", "notes", false, 20170910, Meal.MealVal.BREAKFAST.getVal()), new Meal("LUNCH2", "url", "notes", false, 20170910, Meal.MealVal.LUNCH.getVal()), new Meal("DINDIN3", "url", "notes", false, 20170910, Meal.MealVal.DINNER.getVal())));
+
+        try {
+            cur.moveToFirst();
+            Date lastDate = null;
+            int lastMealVal = 0;
+            Day day = null;
+            int datesLeft = 7;
+            while (!cur.isAfterLast()) {
+                Date thisDate = dt.parse(Integer.toString(cur.getInt(cur.getColumnIndex(MenuDb.MENU_COLUMN_DATE))));
+                int thisMealVal = cur.getInt(cur.getColumnIndex(MenuDb.MENU_COLUMN_MEAL));
+                if (!thisDate.equals(lastDate) || thisMealVal!=lastMealVal) {
+                    lastDate = thisDate;
+                    lastMealVal = thisMealVal;
+                    Meal meal = menuDb.convertCurToMeal(cur);
+                    if (meal.getMealVal() == Meal.MealVal.BREAKFAST.getVal()) {
+                        day = new Day(df5.format(lastDate), meal, null, null);
+                    } else if (meal.getMealVal() == Meal.MealVal.LUNCH.getVal()) {
+                        day.setLunch(meal);
+                    } else if (meal.getMealVal() == Meal.MealVal.DINNER.getVal()) {
+                        day.setDinner(meal);
+                        days.add(day);
+                    }
+                }
+                cur.moveToNext();
+            }
+            if (lastDate != null){
+                datesLeft = (int)( (future.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24) );
+            }else{
+                lastDate = today;
+            }
+            Calendar workCalendar = Calendar.getInstance();
+            workCalendar.setTime(lastDate);
+            for(int i = 0; i < datesLeft; i ++){
+                Date currentDate = calendar.getTime();
+                Meal breakfast = new Meal(Integer.parseInt(dt.format(currentDate)), Meal.MealVal.BREAKFAST.getVal());
+                Meal lunch = new Meal(Integer.parseInt(dt.format(currentDate)), Meal.MealVal.LUNCH.getVal());
+                Meal dinner = new Meal(Integer.parseInt(dt.format(currentDate)), Meal.MealVal.DINNER.getVal());
+                days.add(new Day(df5.format(currentDate),
+                        breakfast,
+                        lunch,
+                        dinner));
+                menuDb.insertMeal(breakfast.getDate(),breakfast.getMealVal(),breakfast.getName(), "", "", 0 );
+                menuDb.insertMeal(lunch.getDate(),lunch.getMealVal(),breakfast.getName(), "", "", 0 );
+                menuDb.insertMeal(dinner.getDate(),dinner.getMealVal(),breakfast.getName(), "", "", 0 );
+                calendar.add(Calendar.DAY_OF_YEAR, 1);
+
+            }
+
+        } catch(ParseException e){
+
+        } catch (NullPointerException n){
+
+        }
     }
 
 

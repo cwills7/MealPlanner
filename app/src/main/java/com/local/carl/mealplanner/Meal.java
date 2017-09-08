@@ -8,6 +8,7 @@ import android.os.Parcelable;
  */
 
 public class Meal implements Parcelable{
+
     int date;
     int mealVal;
     String name;
@@ -40,13 +41,14 @@ public class Meal implements Parcelable{
     }
 
     public Meal(int date, int mealVal){
-        this.name = "";
+        this.name = "Empty";
         this.url = "";
         this.notes = "";
         this.isFavorite = false;
         this.date = date;
         this.mealVal = mealVal;
     }
+
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
         public Meal createFromParcel(Parcel in) {
@@ -120,5 +122,17 @@ public class Meal implements Parcelable{
         isFavorite = favorite;
     }
 
+    public int getMealVal() {return mealVal;}
 
+    public int getDate() {
+        return date;
+    }
+
+    public void setDate(int date) {
+        this.date = date;
+    }
+
+    public void setMealVal(int mealVal) {
+        this.mealVal = mealVal;
+    }
 }
