@@ -1,5 +1,6 @@
 package com.local.carl.mealplanner;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -24,12 +25,14 @@ public class MainActivity extends AppCompatActivity
 
     private List<Day> days;
     RecyclerView mealList;
+    private static Context mContext;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        mContext = getApplicationContext();
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -59,8 +62,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initializeAdapter() {
-        RVAdapter rvAdapter = new RVAdapter(days);
+        RVAdapter rvAdapter = new RVAdapter(this.getApplicationContext(), days);
         mealList.setAdapter(rvAdapter);
+    }
+
+    public static Context getContext(){
+        return mContext;
     }
 
     @Override
@@ -123,9 +130,9 @@ public class MainActivity extends AppCompatActivity
 
     private void initializeData(){
         days = new ArrayList<>();
-        days.add(new Day("Monday", new Meal("bfast1", null, null, false), new Meal("lunch1", null, null, false), new Meal("dinner1", null, null, false)));
-        days.add(new Day("Tuesday", new Meal("bfast2", null, null, false), new Meal("lunch2", null, null, false), new Meal("dinner2", null, null, false)));
-        days.add(new Day("Wednesday", new Meal("bfast3", null, null, false), new Meal("lunch3", null, null, false), new Meal("dinner3", null, null, false)));
+        days.add(new Day("Monday", new Meal("breakfast1", null, null, false), new Meal("lunch1", null, null, false), new Meal("dinner1", null, null, false)));
+        days.add(new Day("Tuesday", new Meal("bfast2", null, null, false), new Meal("lunchlunchlunch2", null, null, false), new Meal("dinner2", null, null, false)));
+        days.add(new Day("Wednesday", new Meal("bfast3", null, null, false), new Meal("lunch3", null, null, false), new Meal("dinner3dindin", null, null, false)));
     }
 
 }

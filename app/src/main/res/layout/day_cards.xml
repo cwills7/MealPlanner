@@ -1,27 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
-    <android.support.v7.widget.CardView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/dayCards"
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dayCards"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:animateLayoutChanges="true">
+
+        <TextView
+            android:id="@+id/day_name"
+            android:textSize="@dimen/day_name_txt_size"
+            android:textColor="@color/colorPrimaryDark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
         <RelativeLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:gravity="center"
+            android:visibility="gone"
+            android:layout_below="@+id/day_name"
+            android:id="@+id/dayExpandArea">
 
             <TextView
-                android:id="@+id/day_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-            <TextView
-                android:id="@+id/meal_name"
+                android:id="@+id/breakfast_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/day_name"/>
+                android:textSize="@dimen/meal_name_txt_size"
+                android:padding="@dimen/standard_pad"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text="@string/edit"
+                android:id="@+id/breakfast_button"
+                android:padding="@dimen/standard_pad"/>
+
+            <TextView
+                android:id="@+id/lunch_name"
+                android:textSize="@dimen/meal_name_txt_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/breakfast_name"
+                android:padding="@dimen/standard_pad"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/breakfast_button"
+                android:layout_alignRight="@+id/lunch_name"
+                android:text="@string/edit"
+                android:id="@+id/lunch_button"
+                android:padding="@dimen/standard_pad"/>
+
+            <TextView
+                android:id="@+id/dinner_name"
+                android:textSize="@dimen/meal_name_txt_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/lunch_name"
+                android:padding="@dimen/standard_pad"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignRight="@+id/dinner_name"
+                android:layout_below="@id/lunch_button"
+                android:text="@string/edit"
+                android:id="@+id/dinner_button"
+                android:padding="@dimen/standard_pad"/>
 
         </RelativeLayout>
-    </android.support.v7.widget.CardView>
+
+
+    </RelativeLayout>
+</android.support.v7.widget.CardView>
