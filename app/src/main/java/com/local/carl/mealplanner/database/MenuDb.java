@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by carlr on 9/7/2017.
@@ -78,7 +79,7 @@ public class MenuDb extends SQLiteOpenHelper{
         values.put("name", meal.getName());
         values.put("url", meal.getUrl());
         values.put("notes", meal.getNotes());
-        values.put("favorite", 0);
+        values.put("favorite", meal.isFavorite());
 
         String selection = MENU_COLUMN_DATE + " =? and " + MENU_COLUMN_MEAL + " =?";
         String[] selectionArgs= {Integer.toString(meal.getDate()), Integer.toString(meal.getMealVal())};
@@ -91,6 +92,18 @@ public class MenuDb extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = db.rawQuery("select * from menu where date=" + date+"", null);
         return res;
+    }
+
+    public List<Meal> getFavoriteNames(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery("select * from menu where favorite= 1", null);
+        List<Meal> favs = new ArrayList<>();
+        res.moveToFirst();
+        while(!res.isAfterLast()){
+            favs.add(convertCurToMeal(res));
+            res.moveToNext();
+        }
+        return favs;
     }
 
     public Meal getMeal(int date, int meal){
@@ -110,7 +123,7 @@ public class MenuDb extends SQLiteOpenHelper{
         return new Meal(res.getString(res.getColumnIndex(MENU_COLUMN_NAME)),
                 res.getString(res.getColumnIndex(MENU_COLUMN_URL)),
                 res.getString(res.getColumnIndex(MENU_COLUMN_NOTES)),
-                convertIntToBool(res.getInt(res.getColumnIndex(MENU_COLUMN_FAVORITE))),
+                res.getInt(res.getColumnIndex(MENU_COLUMN_FAVORITE)),
                 res.getInt(res.getColumnIndex(MENU_COLUMN_DATE)),
                 res.getInt(res.getColumnIndex(MENU_COLUMN_MEAL)));
     }

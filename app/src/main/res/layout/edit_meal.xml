@@ -14,6 +14,14 @@
         android:id="@+id/edit_meal_title"
         android:padding="@dimen/standard_pad"/>
 
+    <ImageButton
+        android:layout_width="@dimen/fav_button_size"
+        android:layout_height="@dimen/fav_button_size"
+        android:layout_alignParentRight="true"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:id="@+id/fav_button"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -25,7 +33,7 @@
             android:layout_height="wrap_content"
             android:text="@string/edit_meal_name"
             android:id="@+id/edit_meal_name_prompt"/>
-        <EditText
+        <AutoCompleteTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/edit_meal_name_text"/>

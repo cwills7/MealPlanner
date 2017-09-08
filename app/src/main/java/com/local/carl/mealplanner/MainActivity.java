@@ -167,6 +167,7 @@ public class MainActivity extends AppCompatActivity
             }
             super.onActivityResult(requestCode, resultCode, data);
         }
+
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -201,16 +202,12 @@ public class MainActivity extends AppCompatActivity
         int noOfDays = 7; //i.e two weeks
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(today);
-        calendar.add(Calendar.DAY_OF_YEAR, -1);
-        Date queryDate = calendar.getTime();
-        String queryDateString = dt.format(queryDate);
-        calendar.add(Calendar.DAY_OF_YEAR, noOfDays +1);
+        calendar.add(Calendar.DAY_OF_YEAR, noOfDays);
         Date future = calendar.getTime();
         String futureString = dt.format(future);
         int todayInt = Integer.parseInt(todayString);
-        int queryDateInt = Integer.parseInt(queryDateString);
         int futureInt = Integer.parseInt(futureString);
-        Cursor cur = menuDb.getOneWeek(queryDateInt, futureInt);
+        Cursor cur = menuDb.getOneWeek(todayInt, futureInt);
         days = new ArrayList<>();
 
         try {

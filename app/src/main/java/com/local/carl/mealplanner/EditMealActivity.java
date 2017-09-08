@@ -2,14 +2,28 @@ package com.local.carl.mealplanner;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.local.carl.mealplanner.database.MenuDb;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by carlr on 9/7/2017.
@@ -18,11 +32,13 @@ import android.widget.Toast;
 public class EditMealActivity extends Activity implements View.OnClickListener{
 
     Button submit;
-    EditText mealName;
+    AutoCompleteTextView mealName;
     TextView mealNamePrompt;
     EditText mealUrl;
     EditText mealNotes;
+    ImageButton favButton;
     Meal meal;
+    MenuDb menuDb;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -30,12 +46,66 @@ public class EditMealActivity extends Activity implements View.OnClickListener{
         setContentView(R.layout.edit_meal);
         Bundle data = getIntent().getExtras();
         meal = (Meal) data.getParcelable("meal");
-
+        menuDb = new MenuDb(this);
         submit = (Button) findViewById(R.id.edit_meal_submit);
         submit.setOnClickListener(this);
 
-        mealName = (EditText) findViewById(R.id.edit_meal_name_text);
-        mealName.setText(meal.getName());
+        //FAV BUTTON
+        favButton = (ImageButton) findViewById(R.id.fav_button);
+        if(meal.isFavorite()==0){
+            favButton.setImageResource(R.drawable.heart_transparent);
+        } else{
+            favButton.setImageResource(R.drawable.heart_full);
+        }
+        favButton.getBackground().setAlpha(0);
+        favButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(meal.isFavorite()== 0) {
+                    favButton.setImageResource(R.drawable.heart_full);
+                    meal.setFavorite(1);
+                } else if (meal.isFavorite() ==1) {
+                    favButton.setImageResource(R.drawable.heart_transparent);
+                    meal.setFavorite(0);
+                }
+            }
+        });
+
+        //mealName autocomplete
+        final List<Meal> favoriteList = menuDb.getFavoriteNames();
+        final ArrayList<String> favoriteNames = new ArrayList<>();
+        for(int i=0; i < favoriteList.size(); i++){
+            if (!favoriteNames.contains(favoriteList.get(i).getName())) {
+                favoriteNames.add(favoriteList.get(i).getName());
+            }
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.select_dialog_item, favoriteNames.toArray(new String[0]));
+        mealName = (AutoCompleteTextView)
+                findViewById(R.id.edit_meal_name_text);
+        mealName.setAdapter(adapter);
+        if(mealName.getText().equals("Empty")) {
+            mealName.setText("");
+            mealName.setHint("Empty");
+        }
+        mealName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String selectedName = (String) parent.getItemAtPosition(position);
+                int index = favoriteNames.indexOf(selectedName);
+                Meal thisMeal = favoriteList.get(index);
+                mealUrl.setText(thisMeal.getUrl());
+                mealNotes.setText(thisMeal.getNotes());
+                meal.setFavorite(thisMeal.isFavorite);
+                if(meal.isFavorite()==0){
+                    favButton.setImageResource(R.drawable.heart_transparent);
+                } else{
+                    favButton.setImageResource(R.drawable.heart_full);
+                }
+            }
+        });
+
+        //Initializing the other components of the page
         mealNamePrompt = (TextView) findViewById(R.id.edit_meal_name_prompt);
         mealUrl = (EditText) findViewById(R.id.edit_meal_url_text);
         mealUrl.setText(meal.getUrl());
@@ -82,7 +152,6 @@ public class EditMealActivity extends Activity implements View.OnClickListener{
         meal.setName(name);
         meal.setUrl(url);
         meal.setNotes(notes);
-
         Intent resultIntent = new Intent();
         resultIntent.putExtra("newMeal", meal);
         setResult(Activity.RESULT_OK, resultIntent);

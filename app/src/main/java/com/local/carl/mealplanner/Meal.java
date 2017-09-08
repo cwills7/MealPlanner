@@ -15,8 +15,7 @@ public class Meal implements Parcelable{
     String url;
     double rating;
     String notes;
-    boolean isFavorite;
-
+    int isFavorite;
     public enum MealVal{
         BREAKFAST(1),
         LUNCH(2),
@@ -31,7 +30,7 @@ public class Meal implements Parcelable{
         }
     }
 
-    public Meal(String name, String url, String notes, boolean isFavorite, int date, int mealVal){
+    public Meal(String name, String url, String notes, int isFavorite, int date, int mealVal){
         this.name = name;
         this.url = url;
         this.notes = notes;
@@ -44,7 +43,7 @@ public class Meal implements Parcelable{
         this.name = "Empty";
         this.url = "";
         this.notes = "";
-        this.isFavorite = false;
+        this.isFavorite = 0;
         this.date = date;
         this.mealVal = mealVal;
     }
@@ -71,6 +70,7 @@ public class Meal implements Parcelable{
         this.name = in.readString();
         this.url = in.readString();
         this.notes =  in.readString();
+        this.isFavorite = in.readInt();
     }
 
     @Override
@@ -80,6 +80,7 @@ public class Meal implements Parcelable{
         dest.writeString(this.name);
         dest.writeString(this.url);
         dest.writeString(this.notes);
+        dest.writeInt(this.isFavorite);
     }
 
     public String getName() {
@@ -114,11 +115,11 @@ public class Meal implements Parcelable{
         this.notes = notes;
     }
 
-    public boolean isFavorite() {
+    public int isFavorite() {
         return isFavorite;
     }
 
-    public void setFavorite(boolean favorite) {
+    public void setFavorite(int favorite) {
         isFavorite = favorite;
     }
 
