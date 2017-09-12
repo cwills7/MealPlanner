@@ -43,6 +43,8 @@ public class MenuDb extends SQLiteOpenHelper{
     public static final String MENU_COLUMN_URL = "url";
     public static final String MENU_COLUMN_NOTES = "notes";
     public static final String MENU_COLUMN_FAVORITE = "favorite";
+    public SimpleDateFormat dt = new SimpleDateFormat("yyyyMMdd");
+
 
 
 
@@ -63,9 +65,19 @@ public class MenuDb extends SQLiteOpenHelper{
         // TODO Define onUpgrade
     }
 
-    public Cursor getOneWeek(int today, int future){
+    public Cursor getOneWeek(){
+        Date today = new Date();
+        String todayString = dt.format(today);
+        int noOfDays = 7; //i.e two weeks
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(today);
+        calendar.add(Calendar.DAY_OF_YEAR, noOfDays);
+        Date future = calendar.getTime();
+        String futureString = dt.format(future);
+        int todayInt = Integer.parseInt(todayString);
+        int futureInt = Integer.parseInt(futureString);
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery("select * from menu where date >= " + today +" and date <= " + future +" order by date, meal", null);
+        Cursor res = db.rawQuery("select * from menu where date >= " + todayInt +" and date <= " + futureInt +" order by date, meal", null);
         return res;
     }
 
@@ -107,6 +119,19 @@ public class MenuDb extends SQLiteOpenHelper{
         return count;
     }
 
+    public int updateFavorite(Meal meal){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("favorite", meal.isFavorite());
+
+        String selection = MENU_COLUMN_NAME + " =?";
+        String[] selectionArgs= {meal.getName()};
+
+        int count = db.update(MenuDb.MENU_TABLE_NAME, values, selection, selectionArgs);
+        return count;
+
+    }
+
     public Cursor getDay(int date){
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = db.rawQuery("select * from menu where date=" + date+"", null);
@@ -116,7 +141,7 @@ public class MenuDb extends SQLiteOpenHelper{
     public List<Meal> getFavoriteNames(){
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = db.rawQuery("select * from menu where favorite= 1", null);
-        List<Meal> favs = new ArrayList<>();
+        List<Meal> favs = new ArrayList<Meal>();
         res.moveToFirst();
         while(!res.isAfterLast()){
             favs.add(convertCurToMeal(res));

@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         menuDb = new MenuDb(this);
-        //menuDb.removeAll();
+        //  menuDb.removeAll();
         mealList = (RecyclerView) findViewById(R.id.mealList);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         mealList.setLayoutManager(llm);
@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               // boolean shouldStartAlarm = !MealNotifications.isServiceAlarmOn(this.getActivity());
+                // boolean shouldStartAlarm = !MealNotifications.isServiceAlarmOn(this.getActivity());
                 MealNotifications.setServiceAlarm((Activity) v.getContext(), true);
                 Intent intent = new Intent(v.getContext(), EditMealActivity.class);
                 intent.putExtra("meal", meal);
@@ -151,21 +151,48 @@ public class MainActivity extends AppCompatActivity
                 Meal returnMeal = (Meal) data.getParcelableExtra("newMeal");
                 menuDb.updateMeal(returnMeal);
                 for(int i=0; i < days.size(); i++){
-                    String formatName = null;
-                    try {
-                        formatName = df5.format(dt.parse(Integer.toString(returnMeal.getDate())));
-                    } catch (ParseException e) {
-                        e.printStackTrace();
+                    if (days.get(i).getBreakfast().getName().equals(returnMeal.getName())) {
+                        days.get(i).replaceMeal(returnMeal, Meal.MealVal.BREAKFAST.getVal());
                     }
-                    if (days.get(i).getName().equals(formatName)){
-                        Day newDay = days.get(i).replaceMeal(returnMeal, returnMeal.getMealVal());
-                        break;
+                    if (days.get(i).getLunch().getName().equals(returnMeal.getName())) {
+                        days.get(i).replaceMeal(returnMeal, Meal.MealVal.LUNCH.getVal());
+                    }
+                    if (days.get(i).getDinner().getName().equals(returnMeal.getName())) {
+                        days.get(i).replaceMeal(returnMeal, Meal.MealVal.DINNER.getVal());
                     }
                 }
+
 
                 rvAdapter.notifyDataSetChanged();
             }
             super.onActivityResult(requestCode, resultCode, data);
+        }
+
+        if (requestCode == 4){
+
+            List<Meal> newMeals = new ArrayList<>();
+            Cursor cur = menuDb.getOneWeek();
+            cur.moveToFirst();
+            while(!cur.isAfterLast()){
+                newMeals.add(menuDb.convertCurToMeal(cur));
+                cur.moveToNext();
+            }
+            for(int i=0; i < days.size(); i=i+3){
+                String formatName = null;
+                try {
+                    formatName = df5.format(dt.parse(Integer.toString(newMeals.get(i).getDate())));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                if (days.get(i).getName().equals(formatName)){
+                    days.get(i%3).replaceMeal(newMeals.get(i), newMeals.get(i).getMealVal());
+                    days.get(i%3).replaceMeal(newMeals.get(i+1), newMeals.get(i+1).getMealVal());
+                    days.get(i%3).replaceMeal(newMeals.get(i+2), newMeals.get(i+2).getMealVal());
+
+                }
+            }
+            rvAdapter.notifyDataSetChanged();
+
         }
 
     }
@@ -176,20 +203,12 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_favorites) {
             // Handle the camera action
             MealNotifications.setServiceAlarm(getApplicationContext(), true);
-
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+            Intent intent = new Intent (this, EditFavoritesActivity.class);
+            startActivityForResult(intent, 4);
+            rvAdapter.notifyDataSetChanged();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -199,20 +218,17 @@ public class MainActivity extends AppCompatActivity
 
 
     private void initializeData(){
-        Date today = new Date();
-        String todayString = dt.format(today);
-        int noOfDays = 7; //i.e two weeks
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(today);
-        calendar.add(Calendar.DAY_OF_YEAR, noOfDays);
-        Date future = calendar.getTime();
-        String futureString = dt.format(future);
-        int todayInt = Integer.parseInt(todayString);
-        int futureInt = Integer.parseInt(futureString);
-        Cursor cur = menuDb.getOneWeek(todayInt, futureInt);
+        Cursor cur = menuDb.getOneWeek();
         days = new ArrayList<>();
 
         try {
+            Date today = new Date();
+            String todayString = dt.format(today);
+            int noOfDays = 7; //i.e two weeks
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(today);
+            calendar.add(Calendar.DAY_OF_YEAR, noOfDays);
+            Date future = calendar.getTime();
             cur.moveToFirst();
             Date lastDate = null;
             int lastMealVal = 0;
@@ -237,8 +253,8 @@ public class MainActivity extends AppCompatActivity
                 cur.moveToNext();
             }
             if (lastDate != null){
-                datesLeft = (int)((future.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24) ) -1;
-                lastDate = today;
+                datesLeft = (int)((future.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24) );
+                //lastDate = today;
 
             }else{
                 lastDate = today;
