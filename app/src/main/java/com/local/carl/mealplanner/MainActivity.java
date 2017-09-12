@@ -54,7 +54,11 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         menuDb = new MenuDb(this);
+
+        /////WARNING: USE THIS ONLY TO RESET DB FOR TESTING
         //  menuDb.removeAll();
+        /////
+
         mealList = (RecyclerView) findViewById(R.id.mealList);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         mealList.setLayoutManager(llm);
@@ -123,7 +127,6 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -134,7 +137,6 @@ public class MainActivity extends AppCompatActivity
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // boolean shouldStartAlarm = !MealNotifications.isServiceAlarmOn(this.getActivity());
                 MealNotifications.setServiceAlarm((Activity) v.getContext(), true);
                 Intent intent = new Intent(v.getContext(), EditMealActivity.class);
                 intent.putExtra("meal", meal);
@@ -161,7 +163,6 @@ public class MainActivity extends AppCompatActivity
                         days.get(i).replaceMeal(returnMeal, Meal.MealVal.DINNER.getVal());
                     }
                 }
-
 
                 rvAdapter.notifyDataSetChanged();
             }
