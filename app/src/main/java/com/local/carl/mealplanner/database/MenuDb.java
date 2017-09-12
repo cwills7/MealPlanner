@@ -1,21 +1,33 @@
 package com.local.carl.mealplanner.database;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.IntentSender;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Bundle;
 import android.provider.BaseColumns;
+import android.util.Log;
+import android.webkit.MimeTypeMap;
 
 import com.local.carl.mealplanner.DBHelper;
 import com.local.carl.mealplanner.Day;
 import com.local.carl.mealplanner.Meal;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by carlr on 9/7/2017.
@@ -57,6 +69,13 @@ public class MenuDb extends SQLiteOpenHelper{
         return res;
     }
 
+    public void removeAll()
+    {
+        // db.delete(String tableName, String whereClause, String[] whereArgs);
+        // If whereClause is null, it will delete all rows.
+        SQLiteDatabase db = this.getWritableDatabase(); // helper is object extends SQLiteOpenHelper
+        db.delete(MenuDb.MENU_TABLE_NAME, null, null);
+    }
 
     public boolean insertMeal (int date, int meal, String name, String url, String notes, int favorite){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -127,6 +146,4 @@ public class MenuDb extends SQLiteOpenHelper{
                 res.getInt(res.getColumnIndex(MENU_COLUMN_DATE)),
                 res.getInt(res.getColumnIndex(MENU_COLUMN_MEAL)));
     }
-
 }
-
