@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -44,6 +45,8 @@ public class MenuDb extends SQLiteOpenHelper{
     public static final String MENU_COLUMN_NOTES = "notes";
     public static final String MENU_COLUMN_FAVORITE = "favorite";
     public SimpleDateFormat dt = new SimpleDateFormat("yyyyMMdd");
+    public DateFormat df5 = new SimpleDateFormat("E, MMM dd");
+
 
 
 
@@ -79,6 +82,23 @@ public class MenuDb extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = db.rawQuery("select * from menu where date >= " + todayInt +" and date <= " + futureInt +" order by date, meal", null);
         return res;
+    }
+
+    public Day getToday(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Date today = new Date();
+        String todayString = dt.format(today);
+        int todayInt = Integer.parseInt(todayString);
+
+        Cursor res = db.rawQuery("select * from menu where date = " + todayInt + " order by meal", null);
+        res.moveToFirst();
+        Meal bfast = convertCurToMeal(res);
+        res.moveToNext();
+        Meal lunch = convertCurToMeal(res);
+        res.moveToNext();
+        Meal dinner = convertCurToMeal(res);
+
+        return new Day(df5.format(today), bfast, lunch, dinner);
     }
 
     public void removeAll()

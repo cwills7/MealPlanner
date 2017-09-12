@@ -10,7 +10,7 @@ public class Day {
     Meal lunch;
     Meal dinner;
 
-    Day(String name, Meal breakfast, Meal lunch, Meal dinner){
+    public Day(String name, Meal breakfast, Meal lunch, Meal dinner){
         this.name = name;
         this.breakfast = breakfast;
         this.lunch = lunch;
