@@ -10,4 +10,5 @@
     <string name="edit_meal_url">Recipe Link: </string>
     <string name="edit_meal_notes">Meal Notes: </string>
     <string name="button_submit">SUBMIT</string>
+    <string name="notification_message">Don\'t Forget Today\'s Meals!</string>
 </resources>

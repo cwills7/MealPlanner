@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         menuDb = new MenuDb(this);
-
+        //menuDb.removeAll();
         mealList = (RecyclerView) findViewById(R.id.mealList);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         mealList.setLayoutManager(llm);
@@ -80,6 +80,10 @@ public class MainActivity extends AppCompatActivity
 
 
 
+    }
+
+    public static Intent newIntent(Context context) {
+        return new Intent(context, MainActivity.class);
     }
 
     private void initializeAdapter() {
@@ -123,12 +127,6 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-//    public void startEditMeal(View v, int resultCode, Meal meal) {
-//        Intent intent = new Intent(getContext(), EditMealActivity.class);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//        intent.putExtra("meal", meal);
-//        this.startActivityForResult(intent, resultCode);
-//    }
 
     public static View.OnClickListener onEditButtonClick(final Meal meal){
 
@@ -136,6 +134,8 @@ public class MainActivity extends AppCompatActivity
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+               // boolean shouldStartAlarm = !MealNotifications.isServiceAlarmOn(this.getActivity());
+                MealNotifications.setServiceAlarm((Activity) v.getContext(), true);
                 Intent intent = new Intent(v.getContext(), EditMealActivity.class);
                 intent.putExtra("meal", meal);
                 ((Activity) v.getContext()).startActivityForResult(intent, 2);
@@ -178,6 +178,8 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_camera) {
             // Handle the camera action
+            MealNotifications.setServiceAlarm(getApplicationContext(), true);
+
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
@@ -235,14 +237,16 @@ public class MainActivity extends AppCompatActivity
                 cur.moveToNext();
             }
             if (lastDate != null){
-                datesLeft = (int)( (future.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24) );
+                datesLeft = (int)((future.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24) ) -1;
+                lastDate = today;
+
             }else{
                 lastDate = today;
             }
             Calendar workCalendar = Calendar.getInstance();
             workCalendar.setTime(lastDate);
             for(int i = 0; i < datesLeft; i ++){
-                Date currentDate = calendar.getTime();
+                Date currentDate = workCalendar.getTime();
                 Meal breakfast = new Meal(Integer.parseInt(dt.format(currentDate)), Meal.MealVal.BREAKFAST.getVal());
                 Meal lunch = new Meal(Integer.parseInt(dt.format(currentDate)), Meal.MealVal.LUNCH.getVal());
                 Meal dinner = new Meal(Integer.parseInt(dt.format(currentDate)), Meal.MealVal.DINNER.getVal());
@@ -253,7 +257,7 @@ public class MainActivity extends AppCompatActivity
                 menuDb.insertMeal(breakfast.getDate(),breakfast.getMealVal(),breakfast.getName(), "", "", 0 );
                 menuDb.insertMeal(lunch.getDate(),lunch.getMealVal(),breakfast.getName(), "", "", 0 );
                 menuDb.insertMeal(dinner.getDate(),dinner.getMealVal(),breakfast.getName(), "", "", 0 );
-                calendar.add(Calendar.DAY_OF_YEAR, 1);
+                workCalendar.add(Calendar.DAY_OF_YEAR, 1);
 
             }
 

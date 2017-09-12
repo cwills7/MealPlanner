@@ -87,6 +87,8 @@ public class EditMealActivity extends Activity implements View.OnClickListener{
         if(mealName.getText().equals("Empty")) {
             mealName.setText("");
             mealName.setHint("Empty");
+        }else{
+            mealName.setText(meal.getName());
         }
         mealName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
