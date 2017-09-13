@@ -3,6 +3,7 @@ package com.local.carl.mealplanner;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -19,6 +20,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.drive.Drive;
 import com.local.carl.mealplanner.database.MenuDb;
 
 import java.text.DateFormat;
@@ -31,6 +37,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private static final int RESOLVE_CONNECTION_REQUEST_CODE = 15;
     public SimpleDateFormat dt = new SimpleDateFormat("yyyyMMdd");
     public DateFormat df5 = new SimpleDateFormat("E, MMM dd");
 
@@ -41,11 +48,13 @@ public class MainActivity extends AppCompatActivity
     Button breakfastButton;
     Button lunchButton;
     Button dinnerButton;
+    GoogleApiClient mGoogleApiClient;
     static RVAdapter rvAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
         //Setting content and setting up CardView
         mContext = getApplicationContext();
@@ -84,6 +93,19 @@ public class MainActivity extends AppCompatActivity
 
 
 
+    }
+
+
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        if (connectionResult.hasResolution()) {
+            try {
+                connectionResult.startResolutionForResult(this, RESOLVE_CONNECTION_REQUEST_CODE);
+            } catch (IntentSender.SendIntentException e) {
+                // Unable to resolve, message user appropriately
+            }
+        } else {
+            GooglePlayServicesUtil.getErrorDialog(connectionResult.getErrorCode(), this, 0).show();
+        }
     }
 
     public static Intent newIntent(Context context) {
@@ -153,14 +175,26 @@ public class MainActivity extends AppCompatActivity
                 Meal returnMeal = (Meal) data.getParcelableExtra("newMeal");
                 menuDb.updateMeal(returnMeal);
                 for(int i=0; i < days.size(); i++){
-                    if (days.get(i).getBreakfast().getName().equals(returnMeal.getName())) {
-                        days.get(i).replaceMeal(returnMeal, Meal.MealVal.BREAKFAST.getVal());
+                    String formatName = null;
+                    try {
+                        formatName = df5.format(dt.parse(Integer.toString(returnMeal.getDate())));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
                     }
-                    if (days.get(i).getLunch().getName().equals(returnMeal.getName())) {
-                        days.get(i).replaceMeal(returnMeal, Meal.MealVal.LUNCH.getVal());
+                    if (days.get(i).getName().equals(formatName)){
+                        Day newDay = days.get(i).replaceMeal(returnMeal, returnMeal.getMealVal());
+                        break;
                     }
-                    if (days.get(i).getDinner().getName().equals(returnMeal.getName())) {
-                        days.get(i).replaceMeal(returnMeal, Meal.MealVal.DINNER.getVal());
+                    if (returnMeal.isFavorite==1) {
+                        if (days.get(i).getBreakfast().getName().equals(returnMeal.getName())) {
+                            days.get(i).replaceMeal(returnMeal, Meal.MealVal.BREAKFAST.getVal());
+                        }
+                        if (days.get(i).getLunch().getName().equals(returnMeal.getName())) {
+                            days.get(i).replaceMeal(returnMeal, Meal.MealVal.LUNCH.getVal());
+                        }
+                        if (days.get(i).getDinner().getName().equals(returnMeal.getName())) {
+                            days.get(i).replaceMeal(returnMeal, Meal.MealVal.DINNER.getVal());
+                        }
                     }
                 }
 
